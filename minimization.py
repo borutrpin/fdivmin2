@@ -11,6 +11,13 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import itertools
 import csv
+import streamlit as st
+
+st.set_page_config(
+page_title="f-div min explorer",
+page_icon="🔦",
+layout="wide"
+)
 
 
 def combine(nr_variables, nr_answers):
@@ -374,7 +381,8 @@ def update_by_minimization(prior="rand",uncond_constraints=[.5],cond_constraints
             updtex2+="_x_x"
         filename="r_oGr_oGp_"+str(round(prior[0]+prior[1],decims))+"_"+str(round(prior[0]/(prior[0]+prior[1]),decims))+"_"+str(round(prior[2]/(prior[2]+prior[3]),decims))+updtex2
         plt.savefig(filename+".pdf",format="pdf")
-        plt.close()
+        # plt.close()
+        st.pyplot(fig)
         tabletext=[[""]+columns]
         for i,j in enumerate(allmarginals1):
             tabletext.append([rows[i]]+j)
@@ -384,6 +392,35 @@ def update_by_minimization(prior="rand",uncond_constraints=[.5],cond_constraints
         
     return ys,probprops2,indeps
 
+st.write(""" This is a tool to update 2 variable-networks by minimizing some central f-divergences; written by Borut Trpin""")
+st.write(""" We assume a network defined by Pr(Rich), Pr(Old|Rich), Pr(Old|Poor)... """)
+         
+number_a1 = st.st.slider("Choose Pr(Rich):",0.0,1.0,key="1")
+number_p1 = st.st.slider("Choose Pr(Old|Rich):",0.0,1.0,key="2")
+number_q1 = st.st.slider("Choose Pr(Old|Poor):",0.0,1.0,key="3")
+
+number_a2 = st.radio("Set posterior Q(Rich)?",["no", "yes"],key="4")
+if number_a2=="yes":
+    number_a2 = st.slider("Choose value:",0.0,1.0,key="5")
+else:
+    number_a2=-1
+    
+number_p2 = st.radio("Set posterior Q(Old|Rich)?",["no", "yes"],key="6")
+if number_p2=="yes":
+    number_p2 = st.slider("Choose value:",0.0,1.0,key="7")
+else:
+    number_p2=-1
+
+number_q2 = st.radio("Set posterior Q(Old|Rich))?",["no", "yes"],key="8")
+if number_q2=="yes":
+    number_q2 = st.slider("Choose value:",0.0,1.0,key="10")
+else:
+    number_q2=-1
+    
+if st.button('Perform an update by minimizing f-divergence'):
+    st.write('To repeat, click again')
+    st.write("You can change any parameters above.")
+    update_by_minimization(distr_2(number_a1,number_p1,number_q1),[number_a2],[number_p2,number_q2],1)
 # with open('corinaExample.csv', 'r') as read_obj:
 
 #     # Return a reader object which will
