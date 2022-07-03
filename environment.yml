@@ -1,7 +1,5 @@
 name: fdivminim2
 dependencies:
   - numpy
-  - itertools
-  - csv
   - scipy
   - matplotlib
